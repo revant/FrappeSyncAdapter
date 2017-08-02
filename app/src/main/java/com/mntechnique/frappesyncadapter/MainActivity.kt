@@ -35,42 +35,6 @@ class MainActivity : AppCompatActivity() {
                 toast("Clicked!")
                 var notes = Select.from(Note::class.java).queryAsList();
                 Log.d("Notes",notes.toString());
-                val api = FrappeNoteApi(applicationContext)
-                val ratt = RetrieveAuthTokenTask(applicationContext, object : AuthReqCallback {
-                    override fun onErrorResponse(e: String?) {
-                    }
-
-                    override fun onSuccessResponse(s: String?) {
-                        api.makeAPICall(FrappeNoteApi.SERIAL, Request.Method.GET,
-                                api.getServerURL() + "/api/resource/Note?fields=[\"*\"]",
-                                JSONObject(), object : Response.Listener<String>{
-                            override fun onResponse(response: String?) {
-                                var notesIn = arrayListOf<Note>()
-                                val jsonResp = JSONObject(response)
-                                val rNotes = jsonResp.getJSONArray("data")
-                                for (i in 0..rNotes.length() - 1) {
-                                    val n = Note()
-                                    n.serverId = rNotes.getJSONObject(i).getString("name")
-                                    n.title = rNotes.getJSONObject(i).getString("name")
-                                    n.position = rNotes.getJSONObject(i).getString("idx")
-                                    n.content = rNotes.getJSONObject(i).getString("content")
-                                    notesIn.add(n)
-                                }
-                                Log.d("LogInterpretedNotes", notesIn.toString())
-                            }
-                        }, object : Response.ErrorListener{
-                            override fun onErrorResponse(error: VolleyError?) {
-                                //To change body of created functions use File | Settings | File Templates.
-                            }
-
-                        }, s)
-
-
-
-                    }
-
-                })
-                ratt.execute()
             })
         }
     }

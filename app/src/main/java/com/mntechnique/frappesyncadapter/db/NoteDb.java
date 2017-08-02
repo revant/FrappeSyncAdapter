@@ -29,10 +29,15 @@ public class NoteDb {
         return Select.from(Note.class).queryAsList();
     }
 
-    public Long createNote(Note localDataInstance) throws RemoteException {
-        Note n = new Note(localDataInstance);
-        CPSyncHelper.insert(mCtx, mProvider, n);
-        return n.getId();
+    public Long createNote(Note localDataInstance) {
+        try {
+            Note n = new Note(localDataInstance);
+            CPSyncHelper.insert(mCtx, mProvider, n);
+            return n.getId();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public Long updateNote(Note localDataInstance) throws RemoteException {

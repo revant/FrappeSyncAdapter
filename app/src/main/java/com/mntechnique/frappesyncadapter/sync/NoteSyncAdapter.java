@@ -50,23 +50,27 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     @Override
-    public void onPerformSync(Account account, Bundle extras, String authority,
-                              ContentProviderClient provider, SyncResult syncResult) {
+    public void onPerformSync(final Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         final ContentProviderClient finalContentProviderClient = provider;
         Log.d(TAG, "onPerformSync");
-        AccountManager am = AccountManager.get(mContext);
-        String authToken = null;
+        performSync(mContext, account, extras, authority, provider, syncResult);
+
+    }
+
+    private static void performSync(Context context, final Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult){
+        AccountManager am = AccountManager.get(context);
         try {
-            authToken = am.blockingGetAuthToken(account, AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS, true);
-            //remote data store
-            FrappeNoteApi api = new FrappeNoteApi(mContext, authToken);
+            String authToken = am.blockingGetAuthToken(account, AccountGeneral.AUTHTOKEN_TYPE_FULL_ACCESS, true);
+            FrappeNoteApi api = new FrappeNoteApi(context, authToken);
+            NoteDb db = new NoteDb(context, provider);
+            am.invalidateAuthToken(account.type, authToken);
+
             NoteSyncRemoteDatastore remoteDatastore = new NoteSyncRemoteDatastore(api);
-            //local data store
-            NoteDb db = new NoteDb(mContext, finalContentProviderClient);
             NoteSyncLocalDatastore localDatastore = new NoteSyncLocalDatastore(db);
-            //sync!
+
             SyncManager<Note, Note> syncManager = new SyncManager<Note, Note>(localDatastore, remoteDatastore);
             syncManager.sync();
+
         } catch (OperationCanceledException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -75,4 +79,5 @@ public class NoteSyncAdapter extends AbstractThreadedSyncAdapter {
             e.printStackTrace();
         }
     }
+
 }

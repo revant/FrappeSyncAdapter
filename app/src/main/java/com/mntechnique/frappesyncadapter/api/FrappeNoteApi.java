@@ -95,11 +95,69 @@ public class FrappeNoteApi {
 	}
 
 	public Note post(Note note) {
-		return null;
+        JSONObject data = new JSONObject();
+        List<Note> notes = new ArrayList<Note>();
+        try {
+            data.put("title", note.getTitle());
+            data.put("content", note.getContent());
+            data.put("public", 1);
+
+            RequestFuture<String> future = makeSyncRequest(SERIAL, Request.Method.POST,
+                    getServerURL() + "/api/resource/Note", data,
+                    bearerToken);
+
+            String response = future.get();
+            Log.d("futureRequest - >", response);
+            JSONObject jsonResp = new JSONObject(response);
+            JSONObject rNote = jsonResp.getJSONObject("data");
+            Note n = new Note();
+            n.setServerId(rNote.getString("name"));
+            n.setTitle(rNote.getString("name"));
+            n.setPosition(rNote.getString("idx"));
+            n.setContent(rNote.getString("content"));
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+        Log.d("LoggingNotesb4ret", notes.toString());
+        return note;
 	}
 
 	public Note put(Note note) {
-        return null;
+        JSONObject data = new JSONObject();
+        List<Note> notes = new ArrayList<Note>();
+        try {
+            data.put("title", note.getTitle());
+            data.put("content", note.getContent());
+            data.put("public", 1);
+
+            RequestFuture<String> future = makeSyncRequest(SERIAL, Request.Method.PUT,
+                    getServerURL() + "/api/resource/Note/" + note.getServerId(), data,
+                    bearerToken);
+
+            String response = future.get();
+            Log.d("futureRequest - >", response);
+            JSONObject jsonResp = new JSONObject(response);
+            JSONObject rNote = jsonResp.getJSONObject("data");
+            Note n = new Note();
+            n.setServerId(rNote.getString("name"));
+            n.setTitle(rNote.getString("name"));
+            n.setPosition(rNote.getString("idx"));
+            n.setContent(rNote.getString("content"));
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+        Log.d("LoggingNotesb4ret", notes.toString());
+        return note;
 	}
 
     public RequestQueue getRequestQueue() {

@@ -28,11 +28,7 @@ public class NoteSyncLocalDatastore implements Datastore<Note> {
     @Override
     public Note add(Note localDataInstance) {
         long id = 0;
-        try {
-            id = mDb.createNote(localDataInstance);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        id = mDb.createNote(localDataInstance);
         Note result = mDb.fetchNote(id);
         return result;
     }
